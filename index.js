@@ -1,6 +1,7 @@
+import 'dotenv/config';
 import express from 'express';
 const app = express(); // express app
-const PORT = 3000; 
+const PORT = process.env.PORT || 3000; 
 
 //earlier we had to respond to so many routes, express things carefully about req
 /*app wants repond a get request
@@ -75,8 +76,13 @@ app.delete("/drugs/:id1",(req,res) =>{
     drugData.splice(index,1);
     res.status(204).send("deleted");
 })
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}...`);
 })
 
 
+
+
+//their is an problem with use of port, if you try deploy in deigitalocean it will not work(security issuses with use of port no directly)
+//we have to use env variables
