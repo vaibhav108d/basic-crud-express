@@ -1,7 +1,28 @@
 import 'dotenv/config';
 import express from 'express';
+import logger from "./logger.js";
+import morgan from "morgan";
+
 const app = express(); // express app
 const PORT = process.env.PORT || 3000; 
+
+const morganFormat = ":method :url :status :response-time ms";
+//a middleware for logging
+app.use(
+  morgan(morganFormat, {  //log obj gives lot info, but we only want this
+    stream: { //through which data is passed
+      write: (message) => { //write:method,message contains all info
+        const logObject = {
+          method: message.split(" ")[0], //get,put,post,etc.
+          url: message.split(" ")[1], //JUST chopping end poits like /drugs- route
+          status: message.split(" ")[2],
+          responseTime: message.split(" ")[3],
+        };
+        logger.info(JSON.stringify(logObject));
+      },
+    },
+  })
+);
 
 //earlier we had to respond to so many routes, express things carefully about req
 /*app wants repond a get request
@@ -24,6 +45,7 @@ let nextId = 1; // id for unique identification
 //not compulsory,post is standard to save data
 /* ADD A DRUG */
 app.post("/drugs", (req, res) => { //req,res given by express
+  logger.warn("A post request was made to /drugs");
   const { name, price } = req.body; //through req i can extract data(body), destructuring
   // const name = req.body.name; //alternative way to extract data
 
